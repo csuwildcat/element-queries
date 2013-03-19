@@ -1,0 +1,13 @@
+{
+  "name": "x-stub",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "0.7.0",
+    "grunt": "~0.4.0",
+    "grunt-smush-components": "~0.1.1",
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-tagrelease": "~0.2.0",
+    "grunt-bumpup": "~0.2.0"
+  }
+}

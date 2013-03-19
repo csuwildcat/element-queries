@@ -1,0 +1,15 @@
+{
+  "name": "stub",
+  "description": "",
+  "version": "0.1.0",
+  "keywords": [
+    "web-components",    
+    "x-tag"
+  ],
+  "main": [
+    "src/main.js"
+  ],
+  "dependencies": {
+    "x-tag-core": "*"
+  }
+}
