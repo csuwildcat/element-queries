@@ -2,7 +2,9 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    
+    jshint:{
+      all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
+    },
     'smush-components': {
       options: {
         fileMap: {
@@ -20,11 +22,13 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-bumpup');
   grunt.loadNpmTasks('grunt-tagrelease');
   grunt.loadNpmTasks('grunt-smush-components');
 
-  grunt.registerTask('build', ['smush-components']);
+  
+  grunt.registerTask('build', ['jshint','smush-components']);
   grunt.registerTask('bump:patch', ['bumpup:patch', 'tagrelease']);
 
 
