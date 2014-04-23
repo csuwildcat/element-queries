@@ -1,24 +1,28 @@
-# About
+## Element Queries
 
-This repo is an X-Tag custom web-component stub that can be used as a starting point when building new elements.  It provides that basic tools and grunt tasks to get started.
+### How to use Element Queries
 
-# Dev Setup
+1. Add the main.js amd main.css files located in /src to your page 
+2. Start having hyper-responsive, element query fun!
 
+#### Example Markup:
+
+```HTML
+  <section media="query(small-width, (max-width: 300px) and (max-height: 300px))">
+
+    <ul>
+      <li>One</li>
+      <li>Two</li>
+      <li>Three</li>
+    </ul>
+
+  </section>
 ```
-Fork this repo, rename it, then clone it.
 
-$ npm install	// install bower tasks
-$ bower install	// install components
-$ grunt build   // build the dependencies
+#### Example CSS:
 
+```CSS
+  section[matched-media~="small-width"] {
+    font-size: 50%; /* small text for a wee lil element! */
+  }
 ```
-
-# Links
-
-[X-Tags Docs](http://x-tags.org/docs)
-
-[Guide for creating X-Tag Components](https://github.com/x-tag/core/wiki/Creating-X-Tag-Components)
-
-[Using X-Tag components in your applications](https://github.com/x-tag/core/wiki/Using-our-Web-Components-in-Your-Application)
-
-

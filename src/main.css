@@ -1,4 +1,4 @@
-body [media]:not(style) { 
+body [media] {
   position: relative;
 }
 

@@ -3,44 +3,314 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Stub Demo - X-Tag</title>
-    <link rel="stylesheet" type="text/css" href="x-tag-components.css"/>
+    <title>Vanilla Element Query Module</title>
     <link rel="stylesheet" type="text/css" href="../src/main.css"/>
-
-    <script type="text/javascript" src="x-tag-components.js"></script> 
     <script type="text/javascript" src="../src/main.js"></script>      
-    <style>
-      x-querybox {
-        width: 50%;
-        background: #e0e0e0;
+	<style>
+  
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    } 
+    
+    body {
+      font-family: Trebuchet MS;
+    }
+    
+    header {
+      padding: 5px 8px; 
+    }
+    
+    section[media] {
+      position: absolute;
+      color: #fff;
+      font-size: 100%;
+      font-weight: bold;
+      text-align: center;
+      background: #f0f0f0;
+      -webkit-transition: background-color 1.5s ease, height 2s ease, width 2s ease;
+      -moz-transition: background-color 1.5s ease, height 2s ease, width 2s ease;
+      -ms-transition: background-color 1.5s ease, height 2s ease, width 2s ease;
+      transition: background-color 1.5s ease, height 2s ease, width 2s ease;
+    }
+    
+    section div {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 95%;
+      -webkit-transition: background-color 1.5s ease;
+      -moz-transition: background-color 1.5s ease;
+      -ms-transition: background-color 1.5s ease;
+      transition: background-color 1.5s ease;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    
+    section div:before, section div:after {
+      display: block;
+    }
+    
+    section div:before {
+      content: "Width: DEFAULT";
+    }
+    
+    section div:after {
+      content: "Height: DEFAULT";
+    }
+    
+    /*** shape1 ***/
+    
+    #shape1 {
+      width: 30%;
+      height: 20%;
+      top: 38%;
+      left: 27%;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    
+    #shape1:active {
+      width: 25%;
+      height: 45%;
+    }
+    
+    #shape1[matched-media~="width-small"] {
+      background-color: #9b59b6;
+    }
+    
+      #shape1[matched-media~="width-small"] div:before {
+        font-size: 80%;
+        content: "Width: SMALL";
       }
-
-      x-querybox:active {
-        width: 25%;
-        background: #e0e0e0;
+      
+    #shape1[matched-media~="height-small"] div {
+      background-color: limegreen;
+    }
+    
+      #shape1[matched-media~="height-small"] div:after {
+        font-size: 80%;
+        content: "Height: SMALL";
       }
-
-      section[matched-media~="TEST"] {
-        background: lightblue;
-        color: red;
+      
+    #shape1[matched-media~="width-medium"] {
+      background-color: gold;
+    }
+    
+      #shape1[matched-media~="width-medium"] div:before {
+        font-size: 100%;
+        content: "Width: MEDIUM";
       }
-    </style>
+      
+    #shape1[matched-media~="height-medium"] div {
+      background-color: lightpink;
+    }
+    
+      #shape1[matched-media~="height-medium"] div:after {
+        font-size: 100%;
+        content: "Height: MEDIUM";
+      }
+    
+    #shape1[matched-media~="width-large"] {
+      background-color: #f1c40f;
+    }
+    
+      #shape1[matched-media~="width-large"] div:before {
+        font-size: 125%;
+        content: "Width: LARGE";
+      }
+    
+    #shape1[matched-media~="height-large"] div {
+      background-color: #FF4500;
+    }
+    
+      #shape1[matched-media~="height-large"] div:after {
+        font-size: 125%;
+        content: "Height: LARGE";
+      }
+    
+    /*** shape2 ***/
+    
+    #shape2 {
+      width: 20%;
+      height: 20%;
+      top: 50%;
+      left: 75%;
+      border-radius: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    
+    #shape2:active {
+      width: 35%;
+      height: 45%;
+    }
+    
+    #shape2[matched-media~="width-small"] {
+      background-color: #3498db;
+    }
+    
+      #shape2[matched-media~="width-small"] div:before {
+        font-size: 80%;
+        content: "Width: SMALL";
+      }
+      
+    #shape2[matched-media~="height-small"] div {
+      background-color: orange;
+    }
+    
+      #shape2[matched-media~="height-small"] div:after {
+        font-size: 80%;
+        content: "Height: SMALL";
+      }
+      
+    #shape2[matched-media~="width-medium"] {
+      background-color: #e67e22;
+    }
+    
+      #shape2[matched-media~="width-medium"] div:before {
+        font-size: 100%;
+        content: "Width: MEDIUM";
+      }
+      
+    #shape2[matched-media~="height-medium"] div {
+      background-color: #20A28E;
+    }
+    
+      #shape2[matched-media~="height-medium"] div:after {
+        font-size: 100%;
+        content: "Height: MEDIUM";
+      }
+    
+    #shape2[matched-media~="width-large"] {
+      background-color: #1abc9c;
+    }
+    
+      #shape2[matched-media~="width-large"] div:before {
+        font-size: 125%;
+        content: "Width: LARGE";
+      }
+      
+    #shape2[matched-media~="height-large"] div {
+      background-color: #D7B900;
+    }
+    
+      #shape2[matched-media~="height-large"] div:after {
+        font-size: 125%;
+        content: "Height: LARGE";
+      }
+      
+    /*** shape3 ***/
+    
+    #shape3 {
+      width: 20%; 
+      height: 30%; 
+      top: 75%;
+      left: 45%;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    
+    #shape3:active {
+      width: 55%;
+      height: 45%;
+    }
+    
+    #shape3[matched-media~="width-small"] {
+      background-color: #FF4500;
+    }
+    
+      #shape3[matched-media~="width-small"] div:before {
+        font-size: 80%;
+        content: "Width: SMALL";
+      }
+    
+    #shape3[matched-media~="height-small"] div {
+      background-color: #3A5FCD;
+    }
+    
+      #shape3[matched-media~="height-small"] div:after {
+        font-size: 80%;
+        content: "Height: SMALL";
+      }
+      
+    #shape3[matched-media~="width-medium"] {
+      background-color: lightpink;
+    }
+    
+      #shape3[matched-media~="width-medium"] div:before {
+        font-size: 100%;
+        content: "Width: MEDIUM";
+      }
+      
+    #shape3[matched-media~="height-medium"] div {
+      background-color: #377AD6;
+    }
+    
+      #shape3[matched-media~="height-medium"] div:after {
+        font-size: 100%;
+        content: "Height: MEDIUM";
+      }
+   
+    #shape3[matched-media~="width-large"] {
+      background-color: lightsteelblue;
+    }
+    
+      #shape3[matched-media~="width-large"] div:before {
+        font-size: 125%;
+        content: "Width: LARGE";
+      }
+      
+    #shape3[matched-media~="height-large"] div {
+      background-color: #00D39E;
+    }
+    
+      #shape3[matched-media~="height-large"] div:after {
+        font-size: 125%;
+        content: "Height: LARGE";
+      }
+    
+	</style>
 </head>
 
 <body>
 
-	<h2>Create a Demo</h2>
+  <header>
+    Hi, I'm <a href="http://www.linkedin.com/in/dbuchner" target="_blank">Daniel</a>, a creative, technical Product Manager who just left Mozilla after 5 years to seek new adventures. 
+    Aside from arcane web hackery, I love teaming up to build innovative products and delightful user experiences. 
+    If you're interested in picking up a all-star free agent, leave your contact info on <a href="https://docs.google.com/forms/d/1dWfOyPm-tIDqb0aHOk1vSSVyHEWgY6tMkLfqWJnZguE/viewform?usp=send_form" target="_blank">this form</a>.
+  </header>
   
-  
-  <section media="query(TEST, (max-width: 600px) and (min-width: 300px))">
-    <ul>
-      <li>Foo</li>
-      <li>Bar</li>
-      <li>Zaz</li>
-      <li>Xul</li>
-    </ul>
+  <section id="shape1" media="
+    query(width-small, (max-width: 199px)) query(width-medium, (min-width: 200px) and (max-width: 349px)) query(width-large, (min-width: 350px))
+    query(height-small, (max-height: 149px)) query(height-medium, (min-height: 150px) and (max-height: 299px)) query(height-large, (min-height: 300px))">
+    <div></div>
   </section>
-
+  
+  <section id="shape2" media="
+    query(width-small, (max-width: 249px)) query(width-medium, (min-width: 250px) and (max-width: 399px)) query(width-large, (min-width: 400px)) 
+    query(height-small, (max-height: 149px)) query(height-medium, (min-height: 150px) and (max-height: 249px)) query(height-large, (min-height: 250px))">
+    <div></div>
+  </section>
+  
+  <section id="shape3" media="
+    query(width-small, (max-width: 224px)) query(width-medium, (min-width: 225px) and (max-width: 374px)) query(width-large, (min-width: 375px)) 
+    query(height-small, (max-height: 149px)) query(height-medium, (min-height: 150px) and (max-height: 249px)) query(height-large, (min-height: 250px))">
+    <div></div>
+  </section>
+  
 </body>
 
 </html>

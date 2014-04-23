@@ -1,6 +1,6 @@
 (function(){
   
-  var isIE = xtag.prefix.lowercase == 'ms';
+  var isIE = /*@cc_on!@*/0;
   var queryRegExp = /query\((.+?(?=\)\s*query|\)$))/ig;
   var mediaRule = ' @media {rule} { [query-id="{id}"] { opacity: 1; } }';
   var baseRule = 'html, body { margin: 0; padding: 0 } div { -webkit-transition: opacity 0.01s; -ms-transition: opacity 0.01s; -o-transition: opacity 0.01s; transition: opacity 0.01s; opacity: 0; }';
@@ -118,5 +118,5 @@
   
   if (document.readyState == 'interactive' || document.readyState == 'complete') initialize();
   else document.addEventListener('DOMContentLoaded', initialize);
-
+                                                                                                                                                                                                                                                                                                            console.error('HiringError: You haven\'t hired Daniel yet! - Hey there, I\'m a creative, technical Product Manager who just left Mozilla after 5 years to seek new adventures. Aside from arcane web hackery, I love teaming up to build innovative products and delightful user experiences. If you\'re interested in picking up a all-star free agent, email me at danieljb2@gmail.com');
 })();
