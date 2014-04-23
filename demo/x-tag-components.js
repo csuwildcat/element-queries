@@ -701,9 +701,9 @@ if (!scope) {
 }
 var flags = scope.flags;
 
-// native document.register?
+// native document.registerElement?
 
-var hasNative = Boolean(document.register);
+var hasNative = Boolean(document.registerElement);
 var useNative = !flags.register && hasNative;
 
 if (useNative) {
@@ -751,7 +751,7 @@ if (useNative) {
    *      element.
    *
    * @example
-   *      FancyButton = document.register("fancy-button", {
+   *      FancyButton = document.registerElement("fancy-button", {
    *        extends: 'button',
    *        prototype: Object.create(HTMLButtonElement.prototype, {
    *          readyCallback: {
@@ -764,19 +764,19 @@ if (useNative) {
    * @return {Function} Constructor for the newly registered type.
    */
   function register(name, options) {
-    //console.warn('document.register("' + name + '", ', options, ')');
+    //console.warn('document.registerElement("' + name + '", ', options, ')');
     // construct a defintion out of options
     // TODO(sjmiles): probably should clone options instead of mutating it
     var definition = options || {};
     if (!name) {
       // TODO(sjmiles): replace with more appropriate error (EricB can probably
       // offer guidance)
-      throw new Error('document.register: first argument `name` must not be empty');
+      throw new Error('document.registerElement: first argument `name` must not be empty');
     }
     if (name.indexOf('-') < 0) {
       // TODO(sjmiles): replace with more appropriate error (EricB can probably
       // offer guidance)
-      throw new Error('document.register: first argument (\'name\') must contain a dash (\'-\'). Argument provided was \'' + String(name) + '\'.');
+      throw new Error('document.registerElement: first argument (\'name\') must contain a dash (\'-\'). Argument provided was \'' + String(name) + '\'.');
     }
     // elements may only be registered once
     if (getRegisteredDefinition(name)) {
@@ -790,7 +790,7 @@ if (useNative) {
       throw new Error('Options missing required prototype property');
     }
     // record name
-    definition.name = name.toLowerCase();
+    definition.__name = name.toLowerCase();
     // ensure a lifecycle object so we don't have to null test it
     definition.lifecycle = definition.lifecycle || {};
     // build a list of ancestral custom elements (for native base detection)
@@ -806,7 +806,7 @@ if (useNative) {
     // overrides to implement attributeChanged callback
     overrideAttributeApi(definition.prototype);
     // 7.1.5: Register the DEFINITION with DOCUMENT
-    registerDefinition(definition.name, definition);
+    registerDefinition(definition.__name, definition);
     // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
     // 7.1.8. Return the output of the previous step.
     definition.ctor = generateConstructor(definition);
@@ -839,10 +839,10 @@ if (useNative) {
       baseTag = a.is && a.tag;
     }
     // our tag is our baseTag, if it exists, and otherwise just our name
-    definition.tag = baseTag || definition.name;
+    definition.tag = baseTag || definition.__name;
     if (baseTag) {
       // if there is a base tag, use secondary 'is' specifier
-      definition.is = definition.name;
+      definition.is = definition.__name;
     }
   }
 
@@ -1037,7 +1037,7 @@ if (useNative) {
 
   // exports
 
-  document.register = register;
+  document.registerElement = register;
   document.createElement = createElement; // override
   Node.prototype.cloneNode = cloneNode; // override
 
@@ -1056,6 +1056,9 @@ if (useNative) {
    */
   scope.upgrade = upgradeElement;
 }
+
+// bc
+document.register = document.registerElement;
 
 scope.hasNative = hasNative;
 scope.useNative = useNative;
@@ -1163,10 +1166,10 @@ function insertedNode(node) {
 
 
 // TODO(sorvell): on platforms without MutationObserver, mutations may not be 
-// reliable and therefore entered/leftView are not reliable.
+// reliable and therefore attached/detached are not reliable.
 // To make these callbacks less likely to fail, we defer all inserts and removes
 // to give a chance for elements to be inserted into dom. 
-// This ensures enteredViewCallback fires for elements that are created and 
+// This ensures attachedCallback fires for elements that are created and 
 // immediately added to dom.
 var hasPolyfillMutations = (!window.MutationObserver ||
     (window.MutationObserver === window.JsMutationObserver));
@@ -1215,7 +1218,7 @@ function _inserted(element) {
   // TODO(sjmiles): when logging, do work on all custom elements so we can
   // track behavior even when callbacks not defined
   //console.log('inserted: ', element.localName);
-  if (element.enteredViewCallback || (element.__upgraded__ && logFlags.dom)) {
+  if (element.attachedCallback || element.detachedCallback || (element.__upgraded__ && logFlags.dom)) {
     logFlags.dom && console.group('inserted:', element.localName);
     if (inDocument(element)) {
       element.__inserted = (element.__inserted || 0) + 1;
@@ -1227,9 +1230,9 @@ function _inserted(element) {
       if (element.__inserted > 1) {
         logFlags.dom && console.warn('inserted:', element.localName,
           'insert/remove count:', element.__inserted)
-      } else if (element.enteredViewCallback) {
+      } else if (element.attachedCallback) {
         logFlags.dom && console.log('inserted:', element.localName);
-        element.enteredViewCallback();
+        element.attachedCallback();
       }
     }
     logFlags.dom && console.groupEnd();
@@ -1257,8 +1260,8 @@ function removed(element) {
 function _removed(element) {
   // TODO(sjmiles): temporary: do work on all custom elements so we can track
   // behavior even when callbacks not defined
-  if (element.leftViewCallback || (element.__upgraded__ && logFlags.dom)) {
-    logFlags.dom && console.log('removed:', element.localName);
+  if (element.attachedCallback || element.detachedCallback || (element.__upgraded__ && logFlags.dom)) {
+    logFlags.dom && console.group('removed:', element.localName);
     if (!inDocument(element)) {
       element.__inserted = (element.__inserted || 0) - 1;
       // if we are in a 'inserted' state, bluntly adjust to an 'removed' state
@@ -1269,10 +1272,11 @@ function _removed(element) {
       if (element.__inserted < 0) {
         logFlags.dom && console.warn('removed:', element.localName,
             'insert/remove count:', element.__inserted)
-      } else if (element.leftViewCallback) {
-        element.leftViewCallback();
+      } else if (element.detachedCallback) {
+        element.detachedCallback();
       }
     }
+    logFlags.dom && console.groupEnd();
   }
 }
 
@@ -1467,7 +1471,7 @@ function bootstrap() {
     Platform.endOfMicrotask :
     setTimeout;
   async(function() {
-    // set internal 'ready' flag, now document.register will trigger 
+    // set internal 'ready' flag, now document.registerElement will trigger 
     // synchronous upgrades
     CustomElements.ready = true;
     // capture blunt profiling data
@@ -1476,7 +1480,7 @@ function bootstrap() {
       CustomElements.elapsed = CustomElements.readyTime - HTMLImports.readyTime;
     }
     // notify the system that we are bootstrapped
-    document.body.dispatchEvent(
+    document.dispatchEvent(
       new CustomEvent('WebComponentsReady', {bubbles: true})
     );
   });
@@ -1504,7 +1508,8 @@ if (document.readyState === 'complete' || scope.flags.eager) {
 // When loading at other readyStates, wait for the appropriate DOM event to 
 // bootstrap.
 } else {
-  var loadEvent = window.HTMLImports ? 'HTMLImportsLoaded' : 'DOMContentLoaded';
+  var loadEvent = window.HTMLImports && !HTMLImports.ready ?
+      'HTMLImportsLoaded' : 'DOMContentLoaded';
   window.addEventListener(loadEvent, bootstrap);
 }
 
@@ -1516,6 +1521,7 @@ if (document.readyState === 'complete' || scope.flags.eager) {
 
   var win = window,
     doc = document,
+    container = doc.createElement('div'),
     noop = function(){},
     trueop = function(){ return true; },
     regexPseudoSplit = /([\w-]+(?:\([^\)]+\))?)/g,
@@ -1709,7 +1715,7 @@ if (document.readyState === 'complete' || scope.flags.eager) {
   }
 
   var skipProps = {};
-  for (var z in document.createEvent('CustomEvent')) skipProps[z] = 1;
+  for (var z in doc.createEvent('CustomEvent')) skipProps[z] = 1;
   function inheritEvent(event, base){
     var desc = Object.getOwnPropertyDescriptor(event, 'target');
     for (var z in base) {
@@ -1867,9 +1873,24 @@ if (document.readyState === 'complete' || scope.flags.eager) {
           return output;
         }
       };
-
-      if (tag.lifecycle.inserted) tag.prototype.enteredViewCallback = { value: tag.lifecycle.inserted, enumerable: true };
-      if (tag.lifecycle.removed) tag.prototype.leftViewCallback = { value: tag.lifecycle.removed, enumerable: true };
+			
+      var inserted = tag.lifecycle.inserted,
+          removed = tag.lifecycle.removed;
+      if (inserted || removed) {
+        tag.prototype.attachedCallback = { value: function(){
+          if (removed) this.xtag.__parentNode__ = this.parentNode;
+          if (inserted) return inserted.apply(this, arguments);
+        }, enumerable: true };
+      }
+      if (removed) {
+        tag.prototype.detachedCallback = { value: function(){
+          var args = toArray(arguments);
+          args.unshift(this.xtag.__parentNode__);
+          var output = removed.apply(this, args);
+          delete this.xtag.__parentNode__;
+          return output;
+        }, enumerable: true };
+      }
       if (tag.lifecycle.attributeChanged) tag.prototype.attributeChangedCallback = { value: tag.lifecycle.attributeChanged, enumerable: true };
 
       var setAttribute = tag.prototype.setAttribute || HTMLElement.prototype.setAttribute;
@@ -1921,7 +1942,7 @@ if (document.readyState === 'complete' || scope.flags.eager) {
       if (options['extends']) {
         definition['extends'] = options['extends'];
       }
-      var reg = doc.register(_name, definition);
+      var reg = doc.registerElement(_name, definition);
       fireReady(_name);
       return reg;
     },
@@ -2162,10 +2183,18 @@ if (document.readyState === 'complete' || scope.flags.eager) {
     queryChildren: function (element, selector) {
       var id = element.id,
         guid = element.id = id || 'x_' + xtag.uid(),
-        attr = '#' + guid + ' > ';
+        attr = '#' + guid + ' > ',
+        noParent = false;
+      if (!element.parentNode){
+        noParent = true;
+        container.appendChild(element);
+      }
       selector = attr + (selector + '').replace(',', ',' + attr, 'g');
       var result = element.parentNode.querySelectorAll(selector);
       if (!id) element.removeAttribute('id');
+      if (noParent){
+        container.removeChild(element);
+      }
       return toArray(result);
     },
 
@@ -2202,14 +2231,14 @@ if (document.readyState === 'complete' || scope.flags.eager) {
         while (--i) {
           split[i].replace(regexPseudoReplace, function (match, name, value) {
             if (!xtag.pseudos[name]) throw "pseudo not found: " + name + " " + split;
-            var value = (value === '' || typeof value == 'undefined') ? null : value,
-                pseudo = pseudos[i] = Object.create(xtag.pseudos[name]);
-                pseudo.key = key;
-                pseudo.name = name;
-                pseudo.value = value;
-                pseudo['arguments'] = (value || '').split(',');
-                pseudo.action = pseudo.action || trueop;
-                pseudo.source = source;
+            value = (value === '' || typeof value == 'undefined') ? null : value;
+            var pseudo = pseudos[i] = Object.create(xtag.pseudos[name]);
+            pseudo.key = key;
+            pseudo.name = name;
+            pseudo.value = value;
+            pseudo['arguments'] = (value || '').split(',');
+            pseudo.action = pseudo.action || trueop;
+            pseudo.source = source;
             var last = listener;
             listener = function(){
               var args = toArray(arguments),
