@@ -8,7 +8,7 @@
 #### Example Markup:
 
 ```HTML
-  <section media="query(small-width, (max-width: 300px) and (max-height: 300px))">
+  <section media="query(small-width, (max-width: 300px))">
 
     <ul>
       <li>One</li>
