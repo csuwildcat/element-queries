@@ -28,12 +28,10 @@
     box.__eq__.loaded = true;
   }
   
-  var requestFrame = (function(fn){ return this(fn); }).bind(
-                        window.requestAnimationFrame ||
-                        window.mozRequestAnimationFrame ||
-                        window.webkitRequestAnimationFrame ||
-                        function(fn){ return window.setTimeout(fn, 20); }
-                      );
+  var requestFrame = window.requestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    function(fn){ return window.setTimeout(fn, 20); };
   
   function debounceMatching(){
     var doc = this;
