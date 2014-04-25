@@ -17,7 +17,6 @@
   }
   
   function objectLoad(e){
-    console.log(e);
     var box = this.__querybox__;
     var doc = box.__eq__.doc = this.contentDocument;
     doc.__querybox__ = box;
