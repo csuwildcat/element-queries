@@ -100,11 +100,11 @@
   
   var setAttr = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function(name){
+    setAttr.apply(this, arguments);
     if (name == 'media') {
       if (this.__eq__) parseQueries(this);
       else attachQuerySensor(this);
     }
-    setAttr.apply(this, arguments);
   }
   
   function initialize(){
@@ -113,7 +113,7 @@
     while (index--) attachQuerySensor(nodes[index]);
   }
   
-  if (document.readyState == 'interactive' || document.readyState == 'complete') initialize();
+  if (document.readyState == 'complete') initialize();
   else document.addEventListener('DOMContentLoaded', initialize);
-                                                                                                                                                                                                                                                                                                            console.error('HiringError: You haven\'t hired Daniel yet! - Hey there, I\'m a creative, technical Product Manager who just left Mozilla after 5 years to seek new adventures. Aside from arcane web hackery, I love teaming up to build innovative products and delightful user experiences. If you\'re interested in picking up an all-star free agent, email me at danieljb2@gmail.com');
+
 })();
